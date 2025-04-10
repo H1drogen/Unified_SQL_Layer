@@ -11,3 +11,17 @@ data = [
     (1695115999911,"c8abbe79-8d89-47ea-b4ce-4d224bae5bfa","rider-J","driver-T",17.85,"chennai")
 ]
 inserts = spark.createDataFrame(data, columns)
+
+def insert_data_to_table(table_name, data_frame):
+    """
+    Inserts data into the specified table in the database.
+    """
+    # Check if the table exists
+    if spark._jsparkSession.catalog().tableExists(table_name):
+        # Append data to the existing table
+        data_frame.write.format("delta").mode("append").saveAsTable(table_name)
+    else:
+        # Create a new table and insert data
+        data_frame.write.format("delta").mode("overwrite").saveAsTable(table_name)
+
+insert_data_to_table("rider-data", inserts)
