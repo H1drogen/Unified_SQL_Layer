@@ -10,7 +10,28 @@ data = [
     (1695516137016,"e3cf430c-889d-4015-bc98-59bdce1e530c","rider-F","driver-P",34.15,"sao_paulo"),
     (1695115999911,"c8abbe79-8d89-47ea-b4ce-4d224bae5bfa","rider-J","driver-T",17.85,"chennai")
 ]
-inserts = spark.createDataFrame(data, columns)
+
+# Create DataFrame
+df = spark.createDataFrame(data, columns)
+
+# Hudi table options
+hudi_options = {
+    "hoodie.table.name": "hudi_example_table",
+    "hoodie.datasource.write.recordkey.field": "id",
+    "hoodie.datasource.write.precombine.field": "timestamp",
+    "hoodie.datasource.write.table.type": "COPY_ON_WRITE",
+    "hoodie.datasource.write.operation": "upsert",
+    "hoodie.datasource.hive_sync.enable": "true",
+    "hoodie.datasource.hive_sync.database": "default",
+    "hoodie.datasource.hive_sync.table": "hudi_example_table",
+    "hoodie.datasource.hive_sync.mode": "hms"
+}
+
+# Write DataFrame to Hudi table
+df.write.format("hudi") \
+    .options(**hudi_options) \
+    .mode("overwrite") \
+    .save("file:///tmp/hudi_example_table")
 
 def insert_data_to_table(table_name, data_frame):
     """
@@ -24,4 +45,4 @@ def insert_data_to_table(table_name, data_frame):
         # Create a new table and insert data
         data_frame.write.format("delta").mode("overwrite").saveAsTable(table_name)
 
-insert_data_to_table("rider-data", inserts)
+
