@@ -1,16 +1,22 @@
-from pyspark.shell import spark
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import lit, col
+import os
+
+os.environ['HADOOP_HOME'] = '/path/to/hadoop'
+os.environ['JAVA_HOME'] = '/path/to/java'
+
 
 # Initialize Spark session
-spark = SparkSession.builder \
-    .appName("HudiExample") \
-    .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer") \
-    .config("spark.sql.hive.convertMetastoreParquet", "false") \
-    .config("spark.sql.extensions", "org.apache.spark.sql.hudi.HoodieSparkSessionExtensions") \
-    .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.hudi.catalog.HoodieCatalog") \
+# spark = SparkSession.builder \
+#     .appName("HudiExample") \
+#     .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer") \
+#     .config("spark.sql.hive.convertMetastoreParquet", "false") \
+#     .config("spark.sql.extensions", "org.apache.spark.sql.hudi.HoodieSparkSessionExtensions") \
+#     .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.hudi.catalog.HoodieCatalog") \
+#     .getOrCreate()
 
 
+spark = SparkSession.builder.appName('Test').getOrCreate()
 
 columns = ["timestamp","uuid","rider_id","driver_id","fare","city"]
 data = [
